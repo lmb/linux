@@ -31,21 +31,34 @@ def send(sock, s):
 
 SERVER_PORT = 12877
 MAX_PORTS = 2
+TRANSPARENT = False
+
+optlist, args = getopt.getopt(args, 't')
+if optlist['-t']:
+    TRANSPARENT = True
+if len(args) > 0:
+    SERVER_PORT = int(args[0])
 
 serverPort = SERVER_PORT
 serverSocket = None
 
 # create passive socket
 serverSocket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+if TRANSPARENT:
+    serverSocket.setsockopt(socket.SOL_IPV6, socket.IPV6_TRANSPARENT, 1)
+HostName = socket.gethostname()
 
-try: serverSocket.bind(('localhost', 0))
+try: serverSocket.bind((HostName, 0))
 except socket.error as msg:
     print('bind fails: ' + str(msg))
 
 sn = serverSocket.getsockname()
 serverPort = sn[1]
 
-cmdStr = ("./tcp_client.py %d &") % (serverPort)
+if TRANSPARENT:
+    cmdStr = ("./tcp_client.py %d &") % (serverPort + 1)
+else:
+    cmdStr = ("./tcp_client.py %d &") % (serverPort)
 os.system(cmdStr)
 
 buf = b''
