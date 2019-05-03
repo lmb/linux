@@ -493,8 +493,6 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
 	memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
 	IPCB(skb)->iif = skb->skb_iif;
 
-	/* Must drop socket now because of tproxy. */
-	skb_orphan(skb);
 
 	return skb;
 
