@@ -44,8 +44,10 @@ static void test_btf_mmap_sysfs(const char *path, struct btf *base)
 		goto cleanup;
 
 	raw_data = mmap(NULL, end, PROT_READ, MAP_PRIVATE, fd, 0);
-	if (!ASSERT_NEQ(raw_data, MAP_FAILED, "mmap_btf"))
+	if (!ASSERT_NEQ(raw_data, MAP_FAILED, "mmap_btf")) {
+		printf("errno is %s\n", strerror(errno));
 		goto cleanup;
+	}
 
 	if (!ASSERT_EQ(mprotect(raw_data, btf_size, PROT_READ | PROT_WRITE), -1,
 	    "mprotect_writable"))

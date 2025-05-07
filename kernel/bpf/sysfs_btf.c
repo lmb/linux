@@ -36,6 +36,9 @@ static int btf_sysfs_vmlinux_mmap(struct file *filp, struct kobject *kobj,
 	if ((vm_size >> PAGE_SHIFT) > pages)
 		return -EINVAL;
 
+	if (!virt_addr_valid(addr))
+		return -ETOOMANYREFS;
+
 	vm_flags_mod(vma, VM_DONTDUMP, VM_MAYEXEC | VM_MAYWRITE);
 
 	for (i = 0; i < pages; i++) {
